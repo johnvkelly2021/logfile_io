@@ -23,7 +23,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Entity
 @Table(name = "log_event")
-public class LogEvent {
+public class LogEventEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

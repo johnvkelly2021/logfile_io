@@ -1,9 +1,15 @@
 package com.test.logfile.io.db.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.Optional;
 
-import com.test.logfile.io.db.entity.LogEvent;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface LogEventRepository extends CrudRepository<LogEvent, Long> {
+import com.test.logfile.io.db.entity.LogEventEntity;
 
+@Repository
+public interface LogEventRepository extends JpaRepository<LogEventEntity, Long> {
+    //Used only for repo test
+    Optional<LogEventEntity> findByHost(String host);
+    Long deleteByHost(String host);
 }

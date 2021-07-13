@@ -1,15 +1,15 @@
 package com.test.logfile.io;
 
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -17,12 +17,12 @@ import com.test.logfile.io.db.entity.LogEventEntity;
 import com.test.logfile.io.db.repository.LogEventRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(args = "--file=src/test/resources/data/logfile.txt")
 @TestPropertySource(locations="classpath:application-test.properties")
-@EnableJpaRepositories("com.test.logfile.io.db.repository")
+@Transactional
 public class LogEventRepositoryTests {
 
-    public static final String UNIQUE_HOST = "UNIQUE-HOST-AAAfgh124Rr";
+   public static final String UNIQUE_HOST = "UNIQUE-HOST-AAAfgh124Rr";
 
     @Autowired
     private LogEventRepository logEventRepository;

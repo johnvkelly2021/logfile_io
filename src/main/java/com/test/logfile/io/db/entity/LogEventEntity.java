@@ -29,6 +29,8 @@ public class LogEventEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private String eventIdentifier;
+
     private Long duration;
 
     private String type;

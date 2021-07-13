@@ -1,8 +1,8 @@
 package com.test.logfile.io.service;
 
-import org.springframework.stereotype.Service;
+import java.io.File;
 
-@Service
-public class LogProcessor {
+public interface LogProcessor {
 
+    void process(File file);
 }

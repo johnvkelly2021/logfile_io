@@ -45,22 +45,22 @@ public class LogfileIoApplication implements ApplicationRunner {
         log.info("Application started with command-line arguments: {}", Arrays.toString(args.getSourceArgs()));
 
         if ( ! args.containsOption("file")) {
-            log.info("\n\n\n\t\t***** Required command line argument 'file' is missing. Please run again with:"
+            log.error("\n\n\n\t\t***** Required command line argument 'file' is missing. Please run again with:"
                      + " 'mvn spring-boot:run -Dspring-boot.run.arguments=--file=[PATH-TO-LOG-FILE]'... *****\n\n\n");
             throw new LogfileIoException("Argument missing (file)");
         }
 
         File theLogfile = new File(file);
-        if(!theLogfile.exists() || !theLogfile.isFile()) {
-            log.info("\n\n\n\t\t***** The file parameter passed does not exist or is not a file... *****\n\n\n");
+        if( ! theLogfile.exists() || ! theLogfile.isFile()) {
+            log.error("\n\n\n\t\t***** The file parameter passed does not exist or is not a file... *****\n\n\n");
             throw new LogfileIoException("File argument does not exist or is not a file");
         }
 
         if (! theLogfile.getName().equalsIgnoreCase(LOGFILE_TXT)) {
-            log.info("\n\n\n\t\t***** The file is not called 'logfile.txt'... *****\n\n\n");
+            log.error("\n\n\n\t\t***** The file is not called 'logfile.txt'... *****\n\n\n");
             throw new LogfileIoException("Filename is incorrect");
         }
 
-
+        logProcessor.process(theLogfile);
     }
 }

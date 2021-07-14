@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.logfile.io.constants.LogEventState;
 import com.test.logfile.io.db.entity.LogEventEntity;
 import com.test.logfile.io.db.repository.LogEventRepository;
+import com.test.logfile.io.exception.LogfileIoException;
 import com.test.logfile.io.mapping.LogEventMapper;
 import com.test.logfile.io.model.LogEventModel;
 import com.test.logfile.io.service.LogProcessor;
@@ -33,7 +34,7 @@ public class LogProcessorImpl implements LogProcessor {
         this.logEventMapper = logEventMapper;
     }
 
-    public void process(File file) {
+    public void process(File file) throws LogfileIoException {
         ConcurrentMap<String, LogEventModel> workingStorage = new ConcurrentHashMap<>();
         LineIterator lineIterator = null;
 
@@ -49,17 +50,23 @@ public class LogProcessorImpl implements LogProcessor {
                 try {
                     LogEventModel currentEvent = jsonMapper.readValue(lineIterator.nextLine(), LogEventModel.class);
                     LogEventEntity entity = logEventMapper.toEntity(currentEvent);
-                    //Check the map to see if this event id has been seen already
                     FindMatchingEventOrUpdateStorage(workingStorage, currentEvent, entity);
                 } catch (JsonProcessingException jpe) {
-                    log.error("Error deserializing an event line", jpe);
+                    throw new LogfileIoException("Error deserializing a log event line", jpe);
                 }
             }
+        }
+
+        if (workingStorage.size() > 0) {
+            if (log.isDebugEnabled()) {
+                workingStorage.forEach((key, value) -> log.debug(key + ":" + value));
+            }
+            throw new LogfileIoException("Working storage map has unmatched (orphaned) log events");
         }
     }
 
     /**
-     * Checks the map for matching id. If found, then calculate duration/alert based on start/finish order and remove
+     * Checks the map for matching id. If found, then calculate duration/alert based on start/finish order and then remove from map
      * If not found, add to map.
      */
     private void FindMatchingEventOrUpdateStorage(ConcurrentMap<String, LogEventModel> workingStorage, LogEventModel currentEvent,
@@ -87,7 +94,7 @@ public class LogProcessorImpl implements LogProcessor {
         long duration = finishTime - startTime;
         entity.setDuration(duration);
         if (duration > 4) {
-            log.info("Alert for id: " + startEvent.getId() + " - duration = " + duration);
+            log.info("Alert for event id: " + startEvent.getId() + " - duration = " + duration);
             entity.setAlert(true);
         } else {
             entity.setAlert(false);

@@ -6,6 +6,15 @@ This application takes a filename as input parameter (not command-line prompt), 
 
 The following instructions should be used...
 
+### Prerequisites
+
+Git installed
+
+Java 8 JDK installed
+
+Maven installed - I used version 3.6.3
+
+
 
 ### To run the HSQL server:
 
